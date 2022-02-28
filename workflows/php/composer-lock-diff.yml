@@ -1,0 +1,55 @@
+name: Composer lock diff
+on:
+  workflow_call:
+    inputs:
+      head:
+        required: false
+        type: string
+        default: ${{ github.head_ref }}
+      base:
+        required: false
+        type: string
+        default: ${{ github.base_ref }}
+      pr_number:
+        required: false
+        type: string
+        default: ${{ github.event.pull_request.number }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  composer-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.head }}
+          # Required to make it possible to compare with PR base branch.
+          fetch-depth: 0
+
+      - name: Get the base (old) branch latest commit SHA
+        id: base-sha
+        run: |
+          git fetch origin
+          echo "::set-output name=base_sha::$(git rev-parse origin/${{ inputs.base }})"
+
+      - name: Generate composer.lock diff
+        id: composer_diff
+        uses: IonBazan/composer-diff-action@v1
+        with:
+          base: ${{ steps.base-sha.outputs.base_sha }}
+          with-links: true
+          with-platform: true
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ steps.composer_diff.outputs.composer_diff_exit_code != 0 }}
+        with:
+          number: ${{ inputs.pr_number }}
+          header: composer-diff
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
+          message: |
+            ${{ steps.composer_diff.outputs.composer_diff }}
