@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate composer.lock diff
         id: composer_diff
-        uses: IonBazan/composer-diff-action@v1
+        uses: IonBazan/composer-diff-action@888204d0e64448026d49f048bc780e6be3b6f4d7
         with:
           base: ${{ steps.base-sha.outputs.base_sha }}
           with-links: true
