@@ -36,6 +36,13 @@ jobs:
           git fetch origin
           echo "::set-output name=base_sha::$(git rev-parse origin/${{ inputs.base }})"
 
+      - name: Rebase current branch (avoid outdated diff results)
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin
+          git rebase origin/${{ inputs.base }}
+
       - name: Generate composer.lock diff
         id: composer_diff
         uses: IonBazan/composer-diff-action@888204d0e64448026d49f048bc780e6be3b6f4d7
