@@ -16,7 +16,9 @@ on:
         default: ${{ github.event.pull_request.number }}
     secrets:
       PHP_VERSION:
+        description: 'PHP version to use'
       COMPOSER_VERSION:
+        description: 'Composer version to use'
 
 permissions:
   contents: read
