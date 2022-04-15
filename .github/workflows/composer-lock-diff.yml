@@ -63,9 +63,11 @@ jobs:
       - name: Run composer lock diff
         id: composer_diff
         run: |
+          set +e
           OUTPUT=$(composer diff --base ${{ steps.base-sha.outputs.base_sha }} --with-links --with-platform --strict --no-ansi)
           EXIT_CODE=$?
 
+          set -e
           echo -n "::set-output name=composer_diff::$OUTPUT"
           echo "::set-output name=composer_diff_exit_code::$EXIT_CODE"
 
