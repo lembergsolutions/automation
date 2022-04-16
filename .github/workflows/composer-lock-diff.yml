@@ -14,6 +14,11 @@ on:
         required: false
         type: string
         default: ${{ github.event.pull_request.number }}
+    secrets:
+      PHP_VERSION:
+        description: 'PHP version to use'
+      COMPOSER_VERSION:
+        description: 'Composer version to use'
 
 permissions:
   contents: read
@@ -43,20 +48,36 @@ jobs:
           git fetch origin
           git rebase origin/${{ inputs.base }}
 
-      - name: Generate composer.lock diff
-        id: composer_diff
-        uses: IonBazan/composer-diff-action@357ac2c9099e6f6d05b1b7a956d56e1f4a68a7b6
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
         with:
-          base: ${{ steps.base-sha.outputs.base_sha }}
-          with-links: true
-          with-platform: true
+          coverage: none
+          php-version: ${{ secrets.PHP_VERSION }}
+          tools: composer:${{ secrets.COMPOSER_VERSION }}
+
+      - name: Install and configure ion-bazan/composer-diff
+        run: |
+          composer global config allow-plugins.ion-bazan/composer-diff true
+          composer global require ion-bazan/composer-diff
+
+      - name: Run composer lock diff
+        id: composer-diff
+        run: |
+          OUTPUT=$(composer diff --base ${{ steps.base-sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
+
+          # Escape multiline output, see https://renehernandez.io/snippets/multiline-strings-as-a-job-output-in-github-actions/
+          OUTPUT="${OUTPUT//'%'/'%25'}"
+          OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+          OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+
+          echo -n "::set-output name=composer_diff::$OUTPUT"
 
       - uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ steps.composer_diff.outputs.composer_diff }}
+        if: ${{ steps.composer-diff.outputs.composer_diff != '' }}
         with:
           number: ${{ inputs.pr_number }}
           header: composer-diff
           hide_and_recreate: true
           hide_classify: "OUTDATED"
           message: |
-            ${{ steps.composer_diff.outputs.composer_diff }}
+            ${{ steps.composer-diff.outputs.composer_diff }}
