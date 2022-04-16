@@ -72,7 +72,8 @@ jobs:
 
           echo -n "::set-output name=composer_diff::$OUTPUT"
 
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - name: Create/update comment when diff is not empty
+        uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ steps.composer-diff.outputs.composer_diff != '' }}
         with:
           number: ${{ inputs.pr_number }}
@@ -81,3 +82,12 @@ jobs:
           hide_classify: "OUTDATED"
           message: |
             ${{ steps.composer-diff.outputs.composer_diff }}
+
+      - name: Hide comment when diff is empty
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ steps.composer-diff.outputs.composer_diff == '' }}
+        with:
+          number: ${{ inputs.pr_number }}
+          header: composer-diff
+          hide: true
+          hide_classify: "OUTDATED"
