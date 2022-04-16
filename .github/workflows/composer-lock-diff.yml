@@ -65,6 +65,7 @@ jobs:
         run: |
           OUTPUT=$(composer diff --base ${{ steps.base-sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
 
+          # Escape multiline output, see https://renehernandez.io/snippets/multiline-strings-as-a-job-output-in-github-actions/
           OUTPUT="${OUTPUT//'%'/'%25'}"
           OUTPUT="${OUTPUT//$'\n'/'%0A'}"
           OUTPUT="${OUTPUT//$'\r'/'%0D'}"
