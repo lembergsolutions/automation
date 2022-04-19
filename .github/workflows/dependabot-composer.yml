@@ -91,7 +91,7 @@ jobs:
       - name: Update other packages (with Composer plugins and scripts enabled)
         if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
-          composer update ${{ inputs.dependency_name }} --with-dependencies --no-interaction
+          composer update ${{ inputs.dependency_name }} --with-all-dependencies --no-interaction
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
