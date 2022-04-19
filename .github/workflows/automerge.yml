@@ -2,10 +2,10 @@ name: Automerge a PR
 on:
   workflow_call:
     inputs:
-      pull_request_number:
+      pull_request_url:
         required: false
         type: string
-        default: ${{ github.event.pull_request.number }}
+        default: ${{ github.event.pull_request.html_url }}
 
 permissions:
   pull-requests: write
@@ -15,6 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Enable automerge
-        run: gh pr merge --auto --squash "${{ inputs.pull_request_number }}"
+        run: gh pr merge --auto --squash "${{ inputs.pull_request_url }}"
         env:
           GITHUB_TOKEN: "${{ github.token }}"
