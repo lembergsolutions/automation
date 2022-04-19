@@ -62,7 +62,7 @@ jobs:
       - name: Get Drupal core major version
         id: drupal_version
         run: |
-          echo "::set-output name=core_version::$(./vendor/bin/drush status --format=json | jq '."drupal_version" | split(".")[0] | tonumber')"
+          echo "::set-output name=core_version::$(./vendor/bin/drush status --format=json | jq '."drupal-version" | split(".")[0] | tonumber')"
 
       - name: Start MySQL service & create DB
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
