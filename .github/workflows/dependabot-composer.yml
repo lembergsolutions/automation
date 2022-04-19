@@ -20,7 +20,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  metadata:
+  composer:
+    name: amend composer updates
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

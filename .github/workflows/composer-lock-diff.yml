@@ -26,6 +26,7 @@ permissions:
 
 jobs:
   composer_diff:
+    name: composer lock diff
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

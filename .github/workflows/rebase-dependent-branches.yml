@@ -15,7 +15,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  update_dep:
+  rebase:
+    name: branch ${{ input.dependent_branch }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
