@@ -1,0 +1,35 @@
+name: Backup the main brach of a project on platform.sh
+on:
+  workflow_call:
+    secrets:
+      PHP_VERSION:
+        description: 'PHP version to use'
+      COMPOSER_VERSION:
+        description: 'Composer version to use'
+      PLATFORMSH_CLI_TOKEN:
+        description: 'Platform.sh CLI token'
+      PLATFORMSH_PROJECT_ID:
+        description: 'Platform.sh project ID'
+      PLATFORMSH_MAIN_BRANCH:
+        description: 'Platform.sh project main branch name'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORMSH_CLI_TOKEN }}
+    steps:
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ secrets.PHP_VERSION }}
+          tools: composer:${{ secrets.COMPOSER_VERSION }}
+
+      - name: Install Platform.sh CLI
+        run: |
+          curl -fsS https://platform.sh/cli/installer | php
+
+      - name: Backup the project
+        run: |
+          ~/.platformsh/bin/platform backup:create --project ${{ secrets.PLATFORMSH_PROJECT_ID }} --environment ${{ secrets.PLATFORMSH_MAIN_BRANCH }} --yes --no-wait

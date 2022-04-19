@@ -1,0 +1,34 @@
+name: Rebase a dependent branch
+on:
+  workflow_call:
+    inputs:
+      main_branch:
+        required: false
+        type: string
+        default: main
+      dependent_branch:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  update_dep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: update-dependencies
+          # Required to make it possible to rebase with the main branch.
+          fetch-depth: 0
+
+      - name: Rebase update-dependencies branch
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin
+          git rebase origin/${{ input.main_branch }}
+          git push origin ${{ input.dependent_branch }} --force

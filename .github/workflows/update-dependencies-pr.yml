@@ -1,0 +1,40 @@
+name: Update dependencies PR
+on:
+  workflow_call:
+    inputs:
+      source_branch:
+        required: false
+        type: string
+        default: update-dependencies
+      destination_branch:
+        required: false
+        type: string
+        default: main
+    outputs:
+      pull_request_number:
+        description: Created pull request number
+        value: ${{ jobs.update_dep.outputs.pull_request_number }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  update_dep:
+    runs-on: ubuntu-latest
+    outputs:
+      pull_request_number:  ${{ steps.open_pr.outputs.pull_request_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create pull request
+        id: open_pr
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ inputs.source_branch }}
+          destination_branch: ${{ inputs.destination_branch }}
+          pr_title: Update dependencies
+          pr_body: ":crown: *Weekly dependencies update*"
+          pr_allow_empty: false
+          github_token: ${{ github.token }}

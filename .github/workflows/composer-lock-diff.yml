@@ -2,15 +2,15 @@ name: Composer lock diff
 on:
   workflow_call:
     inputs:
-      head:
+      head_ref:
         required: false
         type: string
         default: ${{ github.head_ref }}
-      base:
+      base_ref:
         required: false
         type: string
         default: ${{ github.base_ref }}
-      pr_number:
+      pull_request_number:
         required: false
         type: string
         default: ${{ github.event.pull_request.number }}
@@ -25,28 +25,28 @@ permissions:
   pull-requests: write
 
 jobs:
-  composer-diff:
+  composer_diff:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ inputs.head }}
+          ref: ${{ inputs.head_ref }}
           # Required to make it possible to compare with PR base branch.
           fetch-depth: 0
 
       - name: Get the base (old) branch latest commit SHA
-        id: base-sha
+        id: base_sha
         run: |
           git fetch origin
-          echo "::set-output name=base_sha::$(git rev-parse origin/${{ inputs.base }})"
+          echo "::set-output name=base_sha::$(git rev-parse origin/${{ inputs.base_ref }})"
 
       - name: Rebase current branch (avoid outdated diff results)
         run: |
           git config --local user.name 'github-actions[bot]'
           git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
-          git rebase origin/${{ inputs.base }}
+          git rebase origin/${{ inputs.base_ref }}
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -55,15 +55,15 @@ jobs:
           php-version: ${{ secrets.PHP_VERSION }}
           tools: composer:${{ secrets.COMPOSER_VERSION }}
 
-      - name: Install and configure ion-bazan/composer-diff
+      - name: Install and configure ion-bazan/composer_diff
         run: |
-          composer global config allow-plugins.ion-bazan/composer-diff true
-          composer global require ion-bazan/composer-diff
+          composer global config allow-plugins.ion-bazan/composer_diff true
+          composer global require ion-bazan/composer_diff
 
       - name: Run composer lock diff
-        id: composer-diff
+        id: composer_diff
         run: |
-          OUTPUT=$(composer diff --base ${{ steps.base-sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
+          OUTPUT=$(composer diff --base ${{ steps.base_sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
 
           # Escape multiline output, see https://renehernandez.io/snippets/multiline-strings-as-a-job-output-in-github-actions/
           OUTPUT="${OUTPUT//'%'/'%25'}"
@@ -74,20 +74,20 @@ jobs:
 
       - name: Create/update comment when diff is not empty
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ steps.composer-diff.outputs.composer_diff != '' }}
+        if: ${{ steps.composer_diff.outputs.composer_diff != '' }}
         with:
-          number: ${{ inputs.pr_number }}
-          header: composer-diff
+          number: ${{ inputs.pull_request_number }}
+          header: composer_diff
           hide_and_recreate: true
           hide_classify: "OUTDATED"
           message: |
-            ${{ steps.composer-diff.outputs.composer_diff }}
+            ${{ steps.composer_diff.outputs.composer_diff }}
 
       - name: Hide comment when diff is empty
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ steps.composer-diff.outputs.composer_diff == '' }}
+        if: ${{ steps.composer_diff.outputs.composer_diff == '' }}
         with:
-          number: ${{ inputs.pr_number }}
-          header: composer-diff
+          number: ${{ inputs.pull_request_number }}
+          header: composer_diff
           hide: true
           hide_classify: "OUTDATED"
