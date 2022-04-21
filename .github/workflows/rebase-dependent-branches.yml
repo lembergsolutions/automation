@@ -31,5 +31,5 @@ jobs:
           git config --local user.name 'github-actions[bot]'
           git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
-          git rebase origin/${{ input.main_branch }}
-          git push origin ${{ input.dependent_branch }} --force
+          git rebase origin/${{ inputs.main_branch }}
+          git push origin ${{ inputs.dependent_branch }} --force
