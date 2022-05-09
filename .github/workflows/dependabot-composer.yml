@@ -14,6 +14,8 @@ on:
         description: 'PHP version to use'
       COMPOSER_VERSION:
         description: 'Composer version to use'
+      COMPOSER_AUTH:
+        description: 'Composer auth data'
 
 permissions:
   contents: write
@@ -59,6 +61,8 @@ jobs:
       - name: Build the codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Get Drupal core major version
         id: drupal_version
