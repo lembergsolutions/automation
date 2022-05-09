@@ -85,7 +85,6 @@ jobs:
           ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
-          ./vendor/bin/drush config-split:import develop --yes
 
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
