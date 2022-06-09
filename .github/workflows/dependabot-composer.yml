@@ -45,6 +45,10 @@ jobs:
           php-version: ${{ secrets.PHP_VERSION }}
           tools: composer:${{ secrets.COMPOSER_VERSION }}
 
+      - name: Set Composer auth
+        run: |
+          echo "COMPOSER_AUTH=${{ secrets.COMPOSER_AUTH }}" >> $GITHUB_ENV
+
       - name: Get Composer config
         id: composer_config
         run: |
@@ -61,8 +65,6 @@ jobs:
       - name: Build the codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Get Drupal core major version
         id: drupal_version
@@ -90,15 +92,11 @@ jobs:
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
           composer update "drupal/core-*" --with-dependencies --no-interaction
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Update other packages (with Composer plugins and scripts enabled)
         if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
           composer update ${{ inputs.dependency_name }} --with-all-dependencies --no-interaction
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
@@ -112,8 +110,6 @@ jobs:
           ./vendor/bin/drush webform:composer:update
           WEBFORM_PACKAGES=$(./vendor/bin/drush webform:libraries:composer | jq -r '[.repositories[].package.name] | join(" ")')
           composer update $WEBFORM_PACKAGES
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Commit the result & push update to the corresponding branch
         run: |
