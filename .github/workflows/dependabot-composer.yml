@@ -16,6 +16,7 @@ on:
         description: 'Composer version to use'
       COMPOSER_AUTH:
         description: 'Composer auth data'
+        required: false
 
 permissions:
   contents: write
@@ -47,7 +48,7 @@ jobs:
 
       - name: Set Composer auth
         run: |
-          echo "COMPOSER_AUTH=${{ secrets.COMPOSER_AUTH }}" >> $GITHUB_ENV
+          echo "COMPOSER_AUTH='${{ secrets.COMPOSER_AUTH }}'" >> $GITHUB_ENV
 
       - name: Get Composer config
         id: composer_config
