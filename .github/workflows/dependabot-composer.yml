@@ -92,7 +92,7 @@ jobs:
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
-          composer update "drupal/core-*" --with-dependencies --no-interaction
+          composer update "drupal/core-*" --with-all-dependencies --no-interaction
 
       - name: Update other packages (with Composer plugins and scripts enabled)
         if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') }}
