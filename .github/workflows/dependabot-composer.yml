@@ -47,7 +47,6 @@ jobs:
           tools: composer:${{ secrets.COMPOSER_VERSION }}
 
       - name: Set Composer auth
-        if: ${{ secrets.COMPOSER_AUTH }}
         run: |
           echo "COMPOSER_AUTH='${{ secrets.COMPOSER_AUTH }}'" >> $GITHUB_ENV
 
