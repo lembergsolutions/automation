@@ -1,0 +1,81 @@
+name: Update minidump
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+        default: update-dependencies
+    secrets:
+      PHP_VERSION:
+        description: 'PHP version to use'
+      COMPOSER_VERSION:
+        description: 'Composer version to use'
+      COMPOSER_AUTH:
+        description: 'Composer auth data'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-mini-db-dump:
+    name: mini DB dump update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ secrets.PHP_VERSION }}
+          tools: composer:${{ secrets.COMPOSER_VERSION }}
+
+      - name: Set Composer auth
+        if: ${{ secrets.COMPOSER_AUTH }}
+        run: |
+          echo "COMPOSER_AUTH='${{ secrets.COMPOSER_AUTH }}'" >> $GITHUB_ENV
+
+      - name: Get Composer config
+        id: composer_config
+        run: |
+          echo "::set-output name=cache_dir::$(composer config cache-files-dir)"
+          echo "::set-output name=bin-dir::$(composer config bin-dir )"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer_config.outputs.cache_dir }}
+          key: php-${{ secrets.PHP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: php-${{ secrets.PHP_VERSION }}-
+
+      - name: Build the codebase
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: Start MySQL service & create DB
+        run: |
+          sudo systemctl start mysql.service
+          sudo mysql -proot -e "CREATE USER drupal@localhost IDENTIFIED BY 'drupal'; GRANT ALL ON *.* TO drupal@localhost; FLUSH PRIVILEGES;"
+          sudo mysql -proot -e 'CREATE DATABASE drupal;'
+
+      - name: Install the project from configuration & export mini dump
+        run: |
+          ./vendor/bin/drush si --existing-config
+          cd ./docroot
+          php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
+
+      - name: Commit the result & push update to the corresponding branch
+        run: |
+          git add /.ci/dump.php.gz
+
+          # Get username & email from the previous commit (dependabot's)
+          git config --local user.email "ci@lembergsolutions.com"
+          git config --local user.name "Lemberg CI"
+          # Commit without a message.
+          git commit -m "Mini DB dump update"
+          git push origin ${{ inputs.branch }}
