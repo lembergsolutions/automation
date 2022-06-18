@@ -64,13 +64,13 @@ jobs:
 
       - name: Install the project from configuration & export mini dump
         run: |
-          ./vendor/bin/drush si --existing-config
+          ./vendor/bin/drush si --existing-config --debug
           cd ./docroot
           php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
 
       - name: Commit the result & push update to the corresponding branch
         run: |
-          git add /.ci/dump.php.gz
+          git add ./.ci/dump.php.gz
 
           # Get username & email from the previous commit (dependabot's)
           git config --local user.email "ci@lembergsolutions.com"
