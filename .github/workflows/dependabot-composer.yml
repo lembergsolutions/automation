@@ -9,14 +9,6 @@ on:
       dependency_name:
         required: true
         type: string
-    secrets:
-      PHP_VERSION:
-        description: 'PHP version to use'
-      COMPOSER_VERSION:
-        description: 'Composer version to use'
-      COMPOSER_AUTH:
-        description: 'Composer auth data'
-        required: false
 
 permissions:
   contents: write
@@ -26,6 +18,8 @@ jobs:
   composer:
     name: amend composer updates
     runs-on: ubuntu-latest
+    env:
+      COMPOSER_AUTH: '${{ secrets.COMPOSER_AUTH }}'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -45,10 +39,6 @@ jobs:
           coverage: none
           php-version: ${{ secrets.PHP_VERSION }}
           tools: composer:${{ secrets.COMPOSER_VERSION }}
-
-      - name: Set Composer auth
-        run: |
-          echo "COMPOSER_AUTH='${{ secrets.COMPOSER_AUTH }}'" >> $GITHUB_ENV
 
       - name: Get Composer config
         id: composer_config
