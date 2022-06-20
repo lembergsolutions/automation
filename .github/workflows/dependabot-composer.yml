@@ -9,6 +9,14 @@ on:
       dependency_name:
         required: true
         type: string
+    secrets:
+      PHP_VERSION:
+        description: 'PHP version to use'
+      COMPOSER_VERSION:
+        description: 'Composer version to use'
+      COMPOSER_AUTH:
+        description: 'Composer auth data'
+        required: false
 
 permissions:
   contents: write
