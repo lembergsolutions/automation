@@ -65,6 +65,7 @@ jobs:
       - name: Install the project from configuration & export mini dump
         run: |
           ./vendor/bin/drush si --existing-config --debug
+          mkdir -p ./.ci
           cd ./docroot
           php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
 
