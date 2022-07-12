@@ -100,6 +100,7 @@ jobs:
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
         run: |
+          ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:export --yes
 
