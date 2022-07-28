@@ -79,8 +79,6 @@ jobs:
         with:
           number: ${{ inputs.pull_request_number }}
           header: composer_diff
-          hide_and_recreate: true
-          hide_classify: "OUTDATED"
           message: |
             ${{ steps.composer_diff.outputs.composer_diff }}
 
@@ -90,5 +88,4 @@ jobs:
         with:
           number: ${{ inputs.pull_request_number }}
           header: composer_diff
-          hide: true
-          hide_classify: "OUTDATED"
+          delete: true
