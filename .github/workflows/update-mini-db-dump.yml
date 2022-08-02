@@ -77,5 +77,5 @@ jobs:
           git config --local user.email "ci@lembergsolutions.com"
           git config --local user.name "Lemberg CI"
           # Commit without a message.
-          git commit -m "Mini DB dump update"
+          git commit -nm "Mini DB dump update"
           git push origin ${{ inputs.branch }}
