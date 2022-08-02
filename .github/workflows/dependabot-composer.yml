@@ -121,5 +121,5 @@ jobs:
           git config --local user.email "$(git log --format='%ae' HEAD^!)"
           git config --local user.name "$(git log --format='%an' HEAD^!)"
           # Commit without a message.
-          git commit --allow-empty-message -m ""
+          git commit --allow-empty-message -nm ""
           git push origin ${{ inputs.head_ref }} --force
