@@ -47,7 +47,7 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('./molecule/requirements.txt') }}
 
-      - name: Install Molecule and it's dependencies
+      - name: Install Ansible and it's dependencies
         run: pip install --upgrade --upgrade-strategy eager ansible
 
       - name: Install Ansistrano
