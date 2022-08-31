@@ -2,6 +2,11 @@ name: Rollback via Ansistrano
 
 on:
   workflow_call:
+    secrets:
+      SSH_PRIVATE_KEY:
+        description: 'SSH private key'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -42,7 +47,12 @@ jobs:
       - name: Install Ansistrano
         run: ansible-galaxy install --force ansistrano.deploy ansistrano.rollback
 
-      - name: Deploy
+      - name: Set up SSH key
+        run: >
+          eval $(ssh-agent -s)
+          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
+
+      - name: Rollback
         run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml
         env:
           # Force color output.

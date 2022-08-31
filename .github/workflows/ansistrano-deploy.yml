@@ -8,6 +8,11 @@ on:
         required: true
         default: 'main'
         type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        description: 'SSH private key'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -47,6 +52,11 @@ jobs:
 
       - name: Install Ansistrano
         run: ansible-galaxy install --force ansistrano.deploy ansistrano.rollback
+
+      - name: Set up SSH key
+        run: >
+          eval $(ssh-agent -s)
+          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
 
       - name: Deploy
         run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/deploy.yml --extra-vars "ansistrano_git_branch=${{ inputs.deploy_target }}"
