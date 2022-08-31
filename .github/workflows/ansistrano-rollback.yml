@@ -32,13 +32,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('./molecule/requirements.txt') }}
+          key: ${{ runner.os }}-pip-ansible
 
       - name: Cache Python environment
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('./molecule/requirements.txt') }}
+          key: ${{ env.pythonLocation }}-ansible
 
       - name: Install Ansible and it's dependencies
         run: pip install --upgrade --upgrade-strategy eager ansible
