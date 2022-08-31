@@ -1,0 +1,50 @@
+name: Rollback via Ansistrano
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: Rollback via Ansistrano
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+
+      - name: Get PiP Cache Directory
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+
+      - name: Cache PiP dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('./molecule/requirements.txt') }}
+
+      - name: Cache Python environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('./molecule/requirements.txt') }}
+
+      - name: Install Molecule and it's dependencies
+        run: pip install --upgrade --upgrade-strategy eager ansible
+
+      - name: Install Ansistrano
+        run: ansible-galaxy install --force ansistrano.deploy ansistrano.rollback
+
+      - name: Deploy
+        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml
+        env:
+          # Force color output.
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
