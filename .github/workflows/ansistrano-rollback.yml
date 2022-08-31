@@ -52,7 +52,7 @@ jobs:
           ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
 
       - name: Rollback
-        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml
+        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml --ssh-common-args "-o StrictHostKeyChecking=no"
         env:
           # Force color output.
           PY_COLORS: '1'
