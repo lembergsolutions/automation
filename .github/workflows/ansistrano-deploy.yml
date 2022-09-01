@@ -59,7 +59,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Deploy
-        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/deploy.yml --extra-vars "ansistrano_git_branch=${{ inputs.deploy_target }}"
+        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/deploy.yml --extra-vars "ansistrano_git_branch=${{ inputs.deploy_target }}" -v
         env:
           # Force color output.
           PY_COLORS: '1'
