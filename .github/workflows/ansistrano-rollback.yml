@@ -47,9 +47,10 @@ jobs:
         run: ansible-galaxy install --force ansistrano.deploy ansistrano.rollback
 
       - name: Set up SSH key
-        run: >
-          eval $(ssh-agent -s)
-          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{  secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
 
       - name: Rollback
         run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml --ssh-common-args "-o StrictHostKeyChecking=no"
