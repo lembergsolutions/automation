@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   rollback:
-    name: Rollback via Ansistrano
+    name: rollback via Ansistrano
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,7 +53,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Rollback
-        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml --ssh-common-args "-o StrictHostKeyChecking=no"
+        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/rollback.yml --ssh-common-args
         env:
           # Force color output.
           PY_COLORS: '1'

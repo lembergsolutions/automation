@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy via Ansistrano
+    name: deploy via Ansistrano
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,7 +59,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Deploy
-        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/deploy.yml --extra-vars "ansistrano_git_branch=${{ inputs.deploy_target }}" --ssh-common-args "-o StrictHostKeyChecking=no"
+        run: ansible-playbook -i .ansistrano/hosts.yml .ansistrano/deploy.yml --extra-vars "ansistrano_git_branch=${{ inputs.deploy_target }}"
         env:
           # Force color output.
           PY_COLORS: '1'
