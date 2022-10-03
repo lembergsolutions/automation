@@ -23,7 +23,7 @@ jobs:
   update_dep:
     runs-on: ubuntu-latest
     outputs:
-      pull_request_number:  ${{ steps.open_pr.outputs.pull_request_number }}
+      pull_request_number:  ${{ steps.open_pr.outputs.pr_number }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
