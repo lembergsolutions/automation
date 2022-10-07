@@ -60,9 +60,20 @@ jobs:
           sudo mysql -proot -e "CREATE USER drupal@localhost IDENTIFIED BY 'drupal'; GRANT ALL ON *.* TO drupal@localhost; FLUSH PRIVILEGES;"
           sudo mysql -proot -e 'CREATE DATABASE drupal;'
 
-      - name: Install the project from configuration & export mini dump
+      - name: Install the project from existing DB or configuration & export mini dump
         run: |
-          ./vendor/bin/drush si --existing-config --debug
+          cd ./docroot
+          if [ -f "../.ci/dump.php.gz" ]; then
+            php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
+          else
+            ./vendor/bin/drush si --existing-config --debug
+          fi
+
+          cd -
+          ./vendor/bin/drush cache:rebuild
+          ./vendor/bin/drush updatedb --yes
+          ./vendor/bin/drush config:import --yes
+
           mkdir -p ./.ci
           cd ./docroot
           php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
