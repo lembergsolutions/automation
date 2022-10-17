@@ -62,14 +62,14 @@ jobs:
 
       - name: Install the project from existing DB or configuration & export mini dump
         run: |
-          cd ./docroot
           if [ -f "../.ci/dump.php.gz" ]; then
+            cd ./docroot
             php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
+            cd -
           else
             ./vendor/bin/drush si --existing-config --debug
           fi
 
-          cd -
           ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
