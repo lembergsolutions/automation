@@ -37,7 +37,7 @@ jobs:
           git fetch origin ${{ inputs.head_ref }}
           git checkout --force ${{ inputs.head_ref }}
 
-      - name: Restore composer.lock
+      - name: Restore composer.json & composer.lock to the previous version
         run: |
           git restore -s HEAD~ composer.json composer.lock
 
@@ -86,6 +86,10 @@ jobs:
           ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
+
+      - name: Restore composer.json to the latest version by Dependabot
+        run: |
+          git restore composer.json
 
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
