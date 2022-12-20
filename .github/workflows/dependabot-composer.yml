@@ -39,7 +39,7 @@ jobs:
 
       - name: Restore composer.lock
         run: |
-          git restore -s HEAD~ composer.lock
+          git restore -s HEAD~ composer.json composer.lock
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
