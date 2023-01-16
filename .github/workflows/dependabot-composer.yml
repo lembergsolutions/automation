@@ -6,6 +6,10 @@ on:
         required: false
         type: string
         default: ${{ github.head_ref }}
+      base_ref:
+        required: false
+        type: string
+        default: ${{ github.base_ref }}
       dependency_name:
         required: true
         type: string
@@ -39,7 +43,7 @@ jobs:
 
       - name: Restore composer.json & composer.lock to the previous version
         run: |
-          git restore -s HEAD~ composer.json composer.lock
+          git restore -s origin/${{ inputs.base_ref }} composer.json composer.lock
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
