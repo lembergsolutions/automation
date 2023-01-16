@@ -38,7 +38,7 @@ jobs:
 
       - name: Checkout to the corresponding branch
         run: |
-          git fetch origin ${{ inputs.head_ref }}
+          git fetch origin
           git checkout --force ${{ inputs.head_ref }}
 
       - name: Restore composer.json & composer.lock to the previous version
