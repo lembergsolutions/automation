@@ -34,7 +34,7 @@ jobs:
       COMPOSER_AUTH: '${{ secrets.COMPOSER_AUTH }}'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout to the corresponding branch
         run: |
@@ -59,7 +59,7 @@ jobs:
           echo "::set-output name=bin-dir::$(composer config bin-dir )"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.composer_config.outputs.cache_dir }}
           key: php-${{ secrets.PHP_VERSION }}-${{ hashFiles('**/composer.lock') }}
