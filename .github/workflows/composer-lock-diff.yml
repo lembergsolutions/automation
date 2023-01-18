@@ -40,7 +40,7 @@ jobs:
         id: base_sha
         run: |
           git fetch origin
-          echo "::set-output name=base_sha::$(git rev-parse origin/${{ inputs.base_ref }})"
+          echo "base_sha=$(git rev-parse origin/${{ inputs.base_ref }})" >> $GITHUB_OUTPUT
 
       - name: Rebase current branch (avoid outdated diff results)
         run: |
@@ -71,7 +71,7 @@ jobs:
           OUTPUT="${OUTPUT//$'\n'/'%0A'}"
           OUTPUT="${OUTPUT//$'\r'/'%0D'}"
 
-          echo -n "::set-output name=composer_diff::$OUTPUT"
+          echo -n "composer_diff=$OUTPUT" >> $GITHUB_OUTPUT
 
       - name: Create/update comment when diff is not empty
         uses: marocchino/sticky-pull-request-comment@v2

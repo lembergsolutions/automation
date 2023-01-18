@@ -22,8 +22,8 @@ jobs:
       - name: Get package ecosystem from the Dependabot branch name
         id: metadata_pm
         run: |
-          echo "::set-output name=package_manager::$(awk -F/ '{print $2}' <<< '${{ github.head_ref }}')"
+          echo "package_manager=$(awk -F/ '{print $2}' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
       - name: Get dependency name from the Dependabot branch name
         id: metadata_dm
         run: |
-          echo "::set-output name=dependency_name::$(grep -oP '/\K([a-zA-Z_-]+/[a-zA-Z_-]+)(?=-\d+)' <<< '${{ github.head_ref }}')"
+          echo "dependency_name=$(grep -oP '/\K([a-zA-Z_-]+/[a-zA-Z_-]+)(?=-\d+)' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
