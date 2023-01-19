@@ -64,11 +64,14 @@ jobs:
       - name: Run composer lock diff
         id: composer_diff
         run: |
+
+          DELIMETER="$(openssl rand -hex 8)"
+
           OUTPUT=$(composer diff --base ${{ steps.base_sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
 
-          echo "composer_diff=<<EOF" >> $GITHUB_OUTPUT
-          echo -n "$OUTPUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "composer_diff<<$DELIMETER" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "$DELIMETER" >> $GITHUB_OUTPUT
 
       - name: Create/update comment when diff is not empty
         uses: marocchino/sticky-pull-request-comment@v2
