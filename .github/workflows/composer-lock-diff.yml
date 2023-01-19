@@ -64,7 +64,11 @@ jobs:
       - name: Run composer lock diff
         id: composer_diff
         run: |
-          echo -n "composer_diff=$(composer diff --base ${{ steps.base_sha.outputs.base_sha }} --with-links --with-platform --no-ansi)" >> $GITHUB_OUTPUT
+          OUTPUT=$(composer diff --base ${{ steps.base_sha.outputs.base_sha }} --with-links --with-platform --no-ansi)
+
+          echo "composer_diff=<<EOF" >> $GITHUB_OUTPUT
+          echo -n "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create/update comment when diff is not empty
         uses: marocchino/sticky-pull-request-comment@v2
