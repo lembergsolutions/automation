@@ -39,11 +39,7 @@ jobs:
       - name: Checkout to the corresponding branch
         run: |
           git fetch origin
-          git checkout --force ${{ inputs.head_ref }}
-
-      - name: Restore composer.json & composer.lock to the previous version
-        run: |
-          git restore -s origin/${{ inputs.base_ref }} composer.json composer.lock
+          git checkout --force ${{ inputs.base_ref }}
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -90,9 +86,10 @@ jobs:
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
 
-      - name: Restore composer.json to the latest version by Dependabot
+      - name: Checkout to a new branch & restore composer.lock
         run: |
-          git restore composer.json
+          git checkout --force ${{ inputs.head_ref }}
+          git restore -s ${{ inputs.base_ref }} composer.lock
 
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
