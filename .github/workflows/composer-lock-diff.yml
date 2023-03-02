@@ -2,6 +2,12 @@ name: Composer lock diff
 on:
   workflow_call:
     inputs:
+      php_version:
+        required: true
+        type: string
+      composer_version:
+        required: true
+        type: string
       head_ref:
         required: false
         type: string
@@ -14,11 +20,6 @@ on:
         required: false
         type: string
         default: ${{ github.event.pull_request.number }}
-    secrets:
-      PHP_VERSION:
-        description: 'PHP version to use'
-      COMPOSER_VERSION:
-        description: 'Composer version to use'
 
 permissions:
   contents: read
@@ -53,8 +54,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: ${{ secrets.PHP_VERSION }}
-          tools: composer:${{ secrets.COMPOSER_VERSION }}
+          php-version: ${{ inputs.php_version }}
+          tools: composer:${{ inputs.composer_version }}
 
       - name: Install and configure ion-bazan/composer_diff
         run: |

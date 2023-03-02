@@ -2,6 +2,15 @@ name: Dependabot Composer
 on:
   workflow_call:
     inputs:
+      php_version:
+        required: true
+        type: string
+      composer_version:
+        required: true
+        type: string
+      dependency_name:
+        required: true
+        type: string
       head_ref:
         required: false
         type: string
@@ -10,18 +19,11 @@ on:
         required: false
         type: string
         default: ${{ github.base_ref }}
-      dependency_name:
-        required: true
-        type: string
       web_root:
         required: false
         type: string
         default: docroot
     secrets:
-      PHP_VERSION:
-        description: 'PHP version to use'
-      COMPOSER_VERSION:
-        description: 'Composer version to use'
       COMPOSER_AUTH:
         description: 'Composer auth data'
         required: false
@@ -49,8 +51,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: ${{ secrets.PHP_VERSION }}
-          tools: composer:${{ secrets.COMPOSER_VERSION }}
+          php-version: ${{ inputs.php_version }}
+          tools: composer:${{ inputs.composer_version }}
 
       - name: Get Composer config
         id: composer_config
@@ -61,8 +63,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.composer_config.outputs.cache_dir }}
-          key: php-${{ secrets.PHP_VERSION }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: php-${{ secrets.PHP_VERSION }}-
+          key: php-${{ inputs.php_version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: php-${{ inputs.php_version }}-
 
       - name: Build the codebase
         run: |

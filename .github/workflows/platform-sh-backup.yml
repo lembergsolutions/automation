@@ -1,17 +1,23 @@
 name: Backup the main brach of a project on platform.sh
 on:
   workflow_call:
+    inputs:
+      php_version:
+        required: true
+        type: string
+      composer_version:
+        required: true
+        type: string
+      platformsh_project_id:
+        required: true
+        type: string
+      platformsh_main_branch:
+        required: false
+        type: string
+        default: main
     secrets:
-      PHP_VERSION:
-        description: 'PHP version to use'
-      COMPOSER_VERSION:
-        description: 'Composer version to use'
       PLATFORMSH_CLI_TOKEN:
         description: 'Platform.sh CLI token'
-      PLATFORMSH_PROJECT_ID:
-        description: 'Platform.sh project ID'
-      PLATFORMSH_MAIN_BRANCH:
-        description: 'Platform.sh project main branch name'
 
 jobs:
   backup:
@@ -23,8 +29,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: ${{ secrets.PHP_VERSION }}
-          tools: composer:${{ secrets.COMPOSER_VERSION }}
+          php-version: ${{ inputs.php_version }}
+          tools: composer:${{ inputs.composer_version }}
 
       - name: Install Platform.sh CLI
         run: |
@@ -32,4 +38,4 @@ jobs:
 
       - name: Backup the project
         run: |
-          ~/.platformsh/bin/platform backup:create --project ${{ secrets.PLATFORMSH_PROJECT_ID }} --environment ${{ secrets.PLATFORMSH_MAIN_BRANCH }} --yes --no-wait
+          ~/.platformsh/bin/platform backup:create --project ${{ inputs.platformsh_project_id }} --environment ${{ inputs.platformsh_main_branch }} --yes --no-wait
