@@ -6,6 +6,10 @@ on:
         required: false
         type: string
         default: update-dependencies
+      web_root:
+        required: false
+        type: string
+        default: docroot
     secrets:
       PHP_VERSION:
         description: 'PHP version to use'
@@ -62,7 +66,7 @@ jobs:
       - name: Install the project from existing DB or configuration & export mini dump
         run: |
           if [ -f "../.ci/dump.php.gz" ]; then
-            cd ./docroot
+            cd ./${{ inputs.web_root }}
             php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
             cd -
           else
@@ -74,7 +78,7 @@ jobs:
           ./vendor/bin/drush config:import --yes
 
           mkdir -p ./.ci
-          cd ./docroot
+          cd ./${{ inputs.web_root }}
           php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
 
       - name: Commit the result & push update to the corresponding branch

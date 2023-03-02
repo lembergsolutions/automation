@@ -13,6 +13,10 @@ on:
       dependency_name:
         required: true
         type: string
+      web_root:
+        required: false
+        type: string
+        default: docroot
     secrets:
       PHP_VERSION:
         description: 'PHP version to use'
@@ -79,7 +83,7 @@ jobs:
       - name: Install the project from a mini dump & import configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
         run: |
-          cd ./docroot
+          cd ./${{ inputs.web_root }}
           php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
           cd -
           ./vendor/bin/drush cache:rebuild
