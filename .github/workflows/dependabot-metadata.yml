@@ -21,14 +21,20 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dependency-name: ${{ steps.dependabot_dependency_name.outputs.dependency-name }}
-      package-ecosystem: ${{ steps.dependabot_fetch_metadata.outputs.package-ecosystem }}
-      update-type: ${{ steps.dependabot_fetch_metadata.outputs.update-type }}
+      package-ecosystem: ${{ steps.dependabot_package_ecosystem.outputs.package-ecosystem }}
+      update-type: ${{ steps.dependabot_update_type.outputs.update-type }}
     steps:
-      - name: Fetch Dependabot metedata
-        id: dependabot_fetch_metadata
-        uses: dependabot/fetch-metadata@v1
+      - name: Get package ecosystem from the Dependabot branch name
+        id: dependabot_package_ecosystem
+        run: |
+          echo "package-ecosystem=$(awk -F/ '{print $2}' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
 
-      - name: Get main dependency name
+      - name: Get dependency name from the Dependabot branch name
         id: dependabot_dependency_name
         run: |
-          echo "dependency-name=$(echo '${{ steps.dependabot_fetch_metadata.outputs.dependency-names }}' | cut -d',' -f1)" >> $GITHUB_OUTPUT
+          echo "dependency-name=$(grep -oP '/\K([a-zA-Z_-]+/[a-zA-Z_-]+)(?=-\d+)' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
+
+      - name: Get Dependabot update type
+        id: dependabot_fetch_metadata
+        if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+        uses: dependabot/fetch-metadata@v1
