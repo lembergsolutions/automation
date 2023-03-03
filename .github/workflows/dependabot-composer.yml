@@ -8,7 +8,7 @@ on:
       composer_version:
         required: true
         type: string
-      dependency_names:
+      dependency_name:
         required: true
         type: string
       head_ref:
@@ -97,20 +97,15 @@ jobs:
           git checkout --force ${{ inputs.head_ref }}
           git restore -s ${{ inputs.base_ref }} composer.lock
 
-      - name: Get first dependency name
-        id: metadata
-        run: |
-          echo "dependency_name=$(echo '${{ inputs.dependency_names }}' | cut -d',' -f1)" >> $GITHUB_OUTPUT
-
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
-        if: ${{ startsWith(inputs.dependency_names, 'drupal/core') }}
+        if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
           composer update "drupal/core-*" --with-all-dependencies --no-interaction
 
       - name: Update other packages (with Composer plugins and scripts enabled)
-        if: ${{ !startsWith(inputs.dependency_names, 'drupal/core') }}
+        if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') }}
         run: |
-          composer update ${{ steps.metadata.outputs.dependency_name }} --with-all-dependencies --no-interaction
+          composer update ${{ inputs.dependency_name }} --with-all-dependencies --no-interaction
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
@@ -120,7 +115,7 @@ jobs:
           ./vendor/bin/drush config:export --yes
 
       - name: Post-update drupal/webform
-        if: ${{ steps.metadata.outputs.dependency_name == 'drupal/webform' && steps.drupal_version.outputs.core_version != 7 }}
+        if: ${{ inputs.dependency_name == 'drupal/webform' && steps.drupal_version.outputs.core_version != 7 }}
         run: |
           ./vendor/bin/drush webform:composer:update
           WEBFORM_PACKAGES=$(./vendor/bin/drush webform:libraries:composer | jq -r '[.repositories[].package.name] | join(" ")')

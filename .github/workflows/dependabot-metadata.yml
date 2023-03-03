@@ -2,12 +2,15 @@ name: Dependabot metadata
 on:
   workflow_call:
     outputs:
-      package_manager:
-        description: Package manager being used
-        value: ${{ jobs.metadata.outputs.package_manager }}
-      dependency_name:
+      dependency-name:
         description: Dependency name being updated
-        value: ${{ jobs.metadata.outputs.dependency_name }}
+        value: ${{ jobs.metadata.outputs.dependency-name }}
+      package-ecosystem:
+        description: Package ecosystem being used
+        value: ${{ jobs.metadata.outputs.package-ecosystem }}
+      update-type:
+        description: Dependency name being updated
+        value: ${{ jobs.metadata.outputs.update-type }}
 
 permissions:
   contents: read
@@ -16,14 +19,15 @@ jobs:
   metadata:
     runs-on: ubuntu-latest
     outputs:
-      package_manager: ${{ steps.metadata_pm.outputs.package_manager }}
-      dependency_name: ${{ steps.metadata_dm.outputs.dependency_name }}
+      dependency-name: ${{ steps.dependabot_dependency_name.outputs.dependency-name }}
+      package-ecosystem: ${{ steps.dependabot_fetch_metadata.outputs.package-ecosystem }}
+      update-type: ${{ steps.dependabot_fetch_metadata.outputs.update-type }}
     steps:
       - name: Get package ecosystem from the Dependabot branch name
-        id: metadata_pm
+        id: dependabot_fetch_metadata
+        uses: dependabot/fetch-metadata@v1
+
+      - name: Get main dependency name
+        id: dependabot_dependency_name
         run: |
-          echo "package_manager=$(awk -F/ '{print $2}' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
-      - name: Get dependency name from the Dependabot branch name
-        id: metadata_dm
-        run: |
-          echo "dependency_name=$(grep -oP '/\K([a-zA-Z_-]+/[a-zA-Z_-]+)(?=-\d+)' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
+          echo "dependency-name=$(echo '${{ steps.dependabot_fetch_metadata.outputs.dependency-names }}' | cut -d',' -f1)" >> $GITHUB_OUTPUT
