@@ -24,7 +24,7 @@ jobs:
       package-ecosystem: ${{ steps.dependabot_fetch_metadata.outputs.package-ecosystem }}
       update-type: ${{ steps.dependabot_fetch_metadata.outputs.update-type }}
     steps:
-      - name: Get package ecosystem from the Dependabot branch name
+      - name: Fetch Dependabot metedata
         id: dependabot_fetch_metadata
         uses: dependabot/fetch-metadata@v1
 
