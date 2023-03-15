@@ -2,12 +2,6 @@ name: Backup the main brach of a project on platform.sh
 on:
   workflow_call:
     inputs:
-      php_version:
-        required: true
-        type: string
-      composer_version:
-        required: true
-        type: string
       platformsh_project_id:
         required: true
         type: string
@@ -34,8 +28,8 @@ jobs:
 
       - name: Install Platform.sh CLI
         run: |
-          curl -fsS https://platform.sh/cli/installer | php
+          curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | bash
 
       - name: Backup the project
         run: |
-          ~/.platformsh/bin/platform backup:create --project ${{ inputs.platformsh_project_id }} --environment ${{ inputs.platformsh_main_branch }} --yes --no-wait
+          platform backup:create --project ${{ inputs.platformsh_project_id }} --environment ${{ inputs.platformsh_main_branch }} --yes --no-wait
