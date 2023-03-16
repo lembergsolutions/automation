@@ -19,13 +19,6 @@ jobs:
     env:
       PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORMSH_CLI_TOKEN }}
     steps:
-      - name: Install PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          coverage: none
-          php-version: ${{ inputs.php_version }}
-          tools: composer:${{ inputs.composer_version }}
-
       - name: Install Platform.sh CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | bash
