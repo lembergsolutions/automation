@@ -33,7 +33,7 @@ jobs:
         with:
           coverage: none
           php-version: ${{ inputs.php_version }}
-          tools: composer:${{ inputs.composer_version }}, composer-normalize
+          tools: composer:${{ inputs.composer_version }}
 
       - name: Get Composer config
         id: composer_config
@@ -54,8 +54,3 @@ jobs:
       - name: Build the codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
-
-      - name: Normalize composer
-        run: |
-          composer config allow-plugins.ergebnis/composer-normalize true
-          composer normalize --dry-run
