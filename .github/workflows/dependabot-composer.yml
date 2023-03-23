@@ -36,9 +36,6 @@ jobs:
   composer:
     name: amend composer updates
     runs-on: ubuntu-latest
-    env:
-      COMPOSER_AUTH_JSON: '${{ secrets.COMPOSER_AUTH }}'
-      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,6 +44,11 @@ jobs:
         run: |
           git fetch origin
           git checkout --force ${{ inputs.base_ref }}
+
+      - name: Merge Composer auth data before using shivammathur/setup-php
+        run: |
+          COMPOSER_AUTH_JSON=$(jq -cs 'add' <(echo '{"github-oauth": {"github.com": "${{ github.token }}"}}') <(echo ${{ secrets.COMPOSER_AUTH }}))
+          echo $COMPOSER_AUTH_JSON >> $GITHUB_ENV
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
