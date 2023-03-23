@@ -50,8 +50,9 @@ jobs:
       - name: Merge Composer auth data before using shivammathur/setup-php
         run: |
           GITHUB_DEFAULT_AUTH=$(echo '{"github-oauth": {"github.com": "${{ github.token }}"}}')
-          echo "COMPOSER_AUTH=$(jq -cs 'add' <(echo $GITHUB_DEFAULT_AUTH) <(echo "$COMPOSER_AUTH"))" >> $GITHUB_ENV
+          COMPOSER_AUTH=$(jq -cs 'add' <(echo $GITHUB_DEFAULT_AUTH) <(echo "$COMPOSER_AUTH"))
           echo "::add-mask::$COMPOSER_AUTH"
+          echo "COMPOSER_AUTH=$COMPOSER_AUTH" >> $GITHUB_ENV
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
