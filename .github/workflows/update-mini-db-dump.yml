@@ -74,7 +74,7 @@ jobs:
 
       - name: Install the project from existing DB or configuration & export mini dump
         run: |
-          if [ -f "../.ci/dump.php.gz" ]; then
+          if [ -f "./.ci/dump.php.gz" ]; then
             cd ./${{ inputs.web_root }}
             php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
             cd -
