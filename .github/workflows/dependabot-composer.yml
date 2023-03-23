@@ -51,6 +51,7 @@ jobs:
         run: |
           GITHUB_DEFAULT_AUTH=$(echo '{"github-oauth": {"github.com": "${{ github.token }}"}}')
           echo "COMPOSER_AUTH=$(jq -cs 'add' <(echo $GITHUB_DEFAULT_AUTH) <(echo "$COMPOSER_AUTH"))" >> $GITHUB_ENV
+          echo "::add-mask::$COMPOSER_AUTH"
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
