@@ -11,7 +11,7 @@ on:
       branch:
         required: false
         type: string
-        default: update-dependencies
+        default: ${{ github.ref_name }}
       web_root:
         required: false
         type: string
