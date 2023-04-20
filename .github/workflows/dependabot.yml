@@ -71,7 +71,7 @@ jobs:
       php_version: ${{ inputs.php_version }}
       composer_version: ${{ inputs.composer_version }}
       head_ref: ${{ inputs.head_ref }}
-      base_ref: ${{ inputs.head_ref }}
+      base_ref: ${{ inputs.base_ref }}
       pull_request_number: ${{ inputs.pull_request_number }}
 
   automerge:
