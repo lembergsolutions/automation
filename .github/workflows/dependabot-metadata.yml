@@ -32,7 +32,7 @@ jobs:
       - name: Get dependency name from the Dependabot branch name
         id: dependabot_dependency_name
         run: |
-          echo "dependency-name=$(grep -oP '/\K([a-zA-Z_-]+/[a-zA-Z_-]+)(?=-\d+)' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
+          echo "dependency-name=$(grep -oP '/\K([a-zA-Z_0-9-]+/[a-zA-Z_0-9-]+)(?=-[^/]+$)' <<< '${{ github.head_ref }}')" >> $GITHUB_OUTPUT
 
       - name: Get Dependabot update type
         id: dependabot_update_type
