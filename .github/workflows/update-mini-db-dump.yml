@@ -82,6 +82,9 @@ jobs:
             ./vendor/bin/drush si --existing-config --debug
           fi
 
+          # Temporarily disable config ignore.
+          ./vendor/bin/drush config:set config_ignore.settings ignored_config_entities '[]' --yes
+
           ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
