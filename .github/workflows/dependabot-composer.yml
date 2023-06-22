@@ -112,9 +112,8 @@ jobs:
       - name: Sometime Dependabot "forgets" to update composer.json
         if: ${{ github.actor == 'dependabot[bot]' && steps.dependabot_update_type.outputs.update-type == 'version-update:semver-major' }}
         run: |
-          NEW_MAJOR_VERSION=$((`composer info ${{ inputs.dependency_name }} --format=json | jq '.versions[0] | split(".")[0] | tonumber'` + 1))
-          NEW_MINOR_VERSION=$(composer info ${{ inputs.dependency_name }} --format=json | jq '.versions[0] | split(".")[1] | tonumber')
-          composer require ${{ inputs.dependency_name }}:^${NEW_MAJOR_VERSION}.${NEW_MINOR_VERSION} --no-update
+          VERSION_CONTRAINT=$(echo "${{ steps.dependabot_update_type.outputs.new-version }}" | grep -oP "\d+\.\d+")
+          composer require ${{ inputs.dependency_name }}:^${VERSION_CONTRAINT} --no-update
 
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
         if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
