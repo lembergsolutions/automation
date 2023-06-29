@@ -24,6 +24,10 @@ on:
         required: false
         type: string
         default: docroot
+      solr_server_config:
+        required: false
+        type: string
+        default: '[]'
       pull_request_number:
         required: false
         type: string
@@ -59,6 +63,7 @@ jobs:
       head_ref: ${{ inputs.head_ref }}
       base_ref: ${{ inputs.base_ref }}
       web_root: ${{ inputs.web_root }}
+      solr_server_config: ${{ inputs.solr_server_config }}
     secrets:
       COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
