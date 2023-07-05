@@ -158,7 +158,8 @@ jobs:
           echo '${{ inputs.solr_server_config }}' | jq -c '.[]' | while read i; do
             SOLR_SERVER_ID=$(echo $i | jq --raw-output '.server_id')
             SOLR_SERVER_PATH=$(echo $i | jq --raw-output '.path')
-            ./vendor/bin/drush search-api-solr:get-server-config $SOLR_SERVER_ID ${{ runner.temp }}/${SOLR_SERVER_ID}.zip
+            SOLR_SERVER_VERSION=$(echo $i | jq --raw-output '.version')
+            ./vendor/bin/drush search-api-solr:get-server-config $SOLR_SERVER_ID ${{ runner.temp }}/${SOLR_SERVER_ID}.zip $SOLR_SERVER_VERSION
             rm -rf ./${SOLR_SERVER_PATH}/*
             unzip ${{ runner.temp }}/${SOLR_SERVER_ID}.zip -d ./${SOLR_SERVER_PATH}/
             rm ${{ runner.temp }}/${SOLR_SERVER_ID}.zip
