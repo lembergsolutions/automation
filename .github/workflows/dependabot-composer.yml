@@ -119,28 +119,28 @@ jobs:
           git restore -s ${{ inputs.base_ref }} composer.lock
 
       - name: Get Dependabot update type
-        id: dependabot_update_type
+        id: dependabot_metadata
         if: ${{ github.actor == 'dependabot[bot]' }}
         uses: dependabot/fetch-metadata@v1
 
       - name: Sometime Dependabot "forgets" to update composer.json
-        if: ${{ github.actor == 'dependabot[bot]' && steps.dependabot_update_type.outputs.update-type == 'version-update:semver-major' }}
+        if: ${{ github.actor == 'dependabot[bot]' && steps.dependabot_metadata.outputs.update-type == 'version-update:semver-major' }}
         run: |
-          VERSION_CONTRAINT=$(echo "${{ steps.dependabot_update_type.outputs.new-version }}" | grep -oP "\d+\.\d+")
+          VERSION_CONTRAINT=$(echo "${{ steps.dependabot_metadata.outputs.new-version }}" | grep -oP "\d+\.\d+")
           composer require ${{ inputs.dependency_name }}:^${VERSION_CONTRAINT} --no-update
 
       - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
-        if: ${{ startsWith(inputs.dependency_name, 'drupal/core') }}
+        if: ${{ startsWith(inputs.dependency_name, 'drupal/core') ||  steps.dependabot_metadata.outputs.dependency-group == 'drupal-core' }}
         run: |
-          composer update "drupal/core-*" --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
+          composer update "drupal/core*" --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
 
       - name: Update goalgorilla/open_social (and friends) (with Composer plugins and scripts enabled)
-        if: ${{ startsWith(inputs.dependency_name, 'goalgorilla/open_social') }}
+        if: ${{ startsWith(inputs.dependency_name, 'goalgorilla/') ||  steps.dependabot_metadata.outputs.dependency-group == 'open-social' }}
         run: |
           composer update "goalgorilla/*" --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
 
       - name: Update other packages (with Composer plugins and scripts enabled)
-        if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') && !startsWith(inputs.dependency_name, 'goalgorilla/open_social') }}
+        if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') && !startsWith(inputs.dependency_name, 'goalgorilla/') && steps.dependabot_metadata.outputs.dependency-group == '' }}
         run: |
           composer update ${{ inputs.dependency_name }} --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
 
