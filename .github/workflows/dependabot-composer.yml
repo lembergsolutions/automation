@@ -156,7 +156,7 @@ jobs:
         run: |
           ./vendor/bin/drush webform:composer:update
           WEBFORM_PACKAGES=$(./vendor/bin/drush webform:libraries:composer | jq -r '[.repositories[].package.name] | join(" ")')
-          composer update $WEBFORM_PACKAGES
+          composer update $WEBFORM_PACKAGES --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
 
       - name: Post-update drupal/search_api_solr
         if: ${{ inputs.dependency_name == 'drupal/search_api_solr' && steps.drupal_version.outputs.core_version != 7 }}
