@@ -49,13 +49,13 @@ jobs:
   metadata:
     name: dependabot
     if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
-    uses: lembergsolutions/automation/.github/workflows/dependabot-metadata.yml@2.x
+    uses: lembergsolutions/automation/.github/workflows/dependabot-metadata.yml@3.x
 
   composer:
     name: dependabot
     if: ${{ needs.metadata.outputs.package-ecosystem == 'composer' }}
     needs: metadata
-    uses: lembergsolutions/automation/.github/workflows/dependabot-composer.yml@2.x
+    uses: lembergsolutions/automation/.github/workflows/dependabot-composer.yml@3.x
     with:
       php_version: ${{ inputs.php_version }}
       composer_version: ${{ inputs.composer_version }}
@@ -71,7 +71,7 @@ jobs:
     name: dependabot
     if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
     needs: composer
-    uses: lembergsolutions/automation/.github/workflows/composer-lock-diff.yml@2.x
+    uses: lembergsolutions/automation/.github/workflows/composer-lock-diff.yml@3.x
     with:
       php_version: ${{ inputs.php_version }}
       composer_version: ${{ inputs.composer_version }}
@@ -85,6 +85,6 @@ jobs:
     # any branch except main.
     if: ${{ startsWith(inputs.head_ref, 'dependabot') && inputs.base_ref != 'main' && (needs.metadata.outputs.update-type == 'version-update:semver-minor' || needs.metadata.outputs.update-type == 'version-update:semver-patch') }}
     needs: composer-lock-diff
-    uses: lembergsolutions/automation/.github/workflows/automerge.yml@2.x
+    uses: lembergsolutions/automation/.github/workflows/automerge.yml@3.x
     with:
       pull_request_url: ${{ inputs.pull_request_url }}

@@ -113,11 +113,6 @@ jobs:
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
 
-      - name: Checkout to a new branch & restore composer.lock
-        run: |
-          git checkout --force ${{ inputs.head_ref }}
-          git restore -s ${{ inputs.base_ref }} composer.lock
-
       - name: Get Dependabot update type
         id: dependabot_metadata
         if: ${{ github.actor == 'dependabot[bot]' }}
@@ -128,21 +123,7 @@ jobs:
         run: |
           VERSION_CONTRAINT=$(echo "${{ steps.dependabot_metadata.outputs.new-version }}" | grep -oP "\d+\.\d+")
           composer require ${{ inputs.dependency_name }}:^${VERSION_CONTRAINT} --no-update
-
-      - name: Update drupal/core (and friends) (with Composer plugins and scripts enabled)
-        if: ${{ startsWith(inputs.dependency_name, 'drupal/core') ||  steps.dependabot_metadata.outputs.dependency-group == 'drupal-core' }}
-        run: |
-          composer update "drupal/core*" --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
-
-      - name: Update goalgorilla/open_social (and friends) (with Composer plugins and scripts enabled)
-        if: ${{ startsWith(inputs.dependency_name, 'goalgorilla/') ||  steps.dependabot_metadata.outputs.dependency-group == 'open-social' }}
-        run: |
-          composer update "goalgorilla/*" --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
-
-      - name: Update other packages (with Composer plugins and scripts enabled)
-        if: ${{ !startsWith(inputs.dependency_name, 'drupal/core') && !startsWith(inputs.dependency_name, 'goalgorilla/') && steps.dependabot_metadata.outputs.dependency-group == '' }}
-        run: |
-          composer update ${{ inputs.dependency_name }} --with-all-dependencies --no-interaction --prefer-dist --prefer-stable
+          composer update --lock
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
