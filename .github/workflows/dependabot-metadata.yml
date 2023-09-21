@@ -36,5 +36,8 @@ jobs:
 
       - name: Get Dependabot update type
         id: dependabot_update_type
-        if: ${{ github.actor == 'dependabot[bot]' }}
+        if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' }}
         uses: dependabot/fetch-metadata@v1
+        with:
+          skip-commit-verification: true
+          skip-verification: true
