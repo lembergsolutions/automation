@@ -77,7 +77,7 @@ jobs:
           key: php-${{ inputs.php_version }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: php-${{ inputs.php_version }}-
 
-      - name: Build the codebase
+      - name: Build the old codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
@@ -113,6 +113,10 @@ jobs:
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
 
+      - name: Checkout to a new branch
+        run: |
+          git checkout --force ${{ inputs.head_ref }}
+
       - name: Get Dependabot update type
         id: dependabot_metadata
         if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' }}
@@ -127,6 +131,10 @@ jobs:
           VERSION_CONTRAINT=$(echo "${{ steps.dependabot_metadata.outputs.new-version }}" | grep -oP "\d+\.\d+")
           composer require ${{ inputs.dependency_name }}:^${VERSION_CONTRAINT} --no-update
           composer update --lock
+
+      - name: Build the new codebase
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
