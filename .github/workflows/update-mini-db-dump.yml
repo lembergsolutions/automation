@@ -82,6 +82,9 @@ jobs:
             ./vendor/bin/drush si --existing-config --debug
           fi
 
+          # Ensure that translations directory exists.
+          mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
+
           # Temporarily disable config ignore.
           CONFIG_IGNORE_EXISTS=$(./vendor/bin/drush pm:list --type=module --status=enabled  --format=json --filter=config_ignore | jq --raw-output '. | length')
           # Cast to integer, see https://unix.stackexchange.com/a/301285
