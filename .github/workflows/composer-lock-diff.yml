@@ -45,13 +45,6 @@ jobs:
           git fetch origin
           echo "base_sha=$(git rev-parse origin/${{ inputs.base_ref }})" >> $GITHUB_OUTPUT
 
-      - name: Rebase current branch (avoid outdated diff results)
-        run: |
-          git config --local user.name 'github-actions[bot]'
-          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
-          git fetch origin
-          git rebase origin/${{ inputs.base_ref }}
-
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
