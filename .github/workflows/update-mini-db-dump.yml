@@ -104,7 +104,7 @@ jobs:
 
       - name: Commit the result & push update to the corresponding branch
         run: |
-          git add ./.ci/dump.php.gz
+          git add --force ./.ci/dump.php.gz
 
           # Get username & email from the previous commit (dependabot's)
           git config --local user.email "ci@lembergsolutions.com"
