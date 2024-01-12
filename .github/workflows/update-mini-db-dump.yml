@@ -85,15 +85,6 @@ jobs:
           # Ensure that translations directory exists.
           mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
 
-          # Temporarily disable config ignore.
-          CONFIG_IGNORE_EXISTS=$(./vendor/bin/drush pm:list --type=module --status=enabled  --format=json --filter=config_ignore | jq --raw-output '. | length')
-          # Cast to integer, see https://unix.stackexchange.com/a/301285
-          CONFIG_IGNORE_EXISTS=$(($CONFIG_IGNORE_EXISTS + 0))
-          if [ $CONFIG_IGNORE_EXISTS -ne 0 ];
-          then
-            ./vendor/bin/drush config:set config_ignore.settings ignored_config_entities '[]' --yes
-          fi
-
           ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush updatedb --yes
           ./vendor/bin/drush config:import --yes
