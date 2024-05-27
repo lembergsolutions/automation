@@ -44,7 +44,7 @@ jobs:
         with:
           coverage: none
           php-version: ${{ inputs.php_version }}
-          tools: composer:${{ inputs.composer_version }}, php-parallel-lint/php-parallel-lint
+          tools: composer:${{ inputs.composer_version }}, parallel-lint
 
       - name: Get Composer config
         id: composer_config
@@ -61,7 +61,7 @@ jobs:
       - name: Validate composer
         run: |
           composer validate --no-check-all --strict
-          php-parallel-lint -e inc,install,module,php,profile .
+          parallel-lint -e inc,install,module,php,profile .
 
       - name: Build the codebase
         run: |
