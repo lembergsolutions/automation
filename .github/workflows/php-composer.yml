@@ -58,10 +58,13 @@ jobs:
           key: php-${{ inputs.php_version }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: php-${{ inputs.php_version }}-
 
+      - name: Lint custom PHP code
+        run: |
+          parallel-lint -e inc,install,module,php,profile .
+
       - name: Validate composer
         run: |
           composer validate --no-check-all --strict
-          parallel-lint -e inc,install,module,php,profile .
 
       - name: Build the codebase
         run: |
