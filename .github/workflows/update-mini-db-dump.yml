@@ -16,6 +16,10 @@ on:
         required: false
         type: string
         default: docroot
+      config_ignore_deactivate:
+        required: false
+        type: boolean
+        default: false
     secrets:
       COMPOSER_AUTH:
         description: 'Composer auth data'
@@ -93,6 +97,8 @@ jobs:
           mkdir -p ./.ci
           cd ./${{ inputs.web_root }}
           php ./core/scripts/db-tools.php dump-database-d8-mysql | gzip --best > ../.ci/dump.php.gz
+        env:
+          CONFIG_IGNORE_DEACTIVATE: ${{ inputs.config_ignore_deactivate }}
 
       - name: Commit the result & push update to the corresponding branch
         run: |
