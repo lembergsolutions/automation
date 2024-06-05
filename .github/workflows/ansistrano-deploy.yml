@@ -47,7 +47,7 @@ jobs:
           key: ${{ env.pythonLocation }}-ansible
 
       - name: Install Ansible and it's dependencies
-        run: pip install --upgrade --upgrade-strategy eager ansible
+        run: pip install --upgrade --upgrade-strategy eager 'ansible==9.*'
 
       - name: Install Ansistrano
         run: ansible-galaxy install --force ansistrano.deploy ansistrano.rollback
