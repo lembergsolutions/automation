@@ -100,6 +100,8 @@ jobs:
           php ./core/scripts/db-tools.php import ../.ci/dump.php.gz
           cd -
 
+          mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
+
           ./vendor/bin/drush deploy
 
       - name: Checkout to a new branch
