@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   rebase:
-    name: branch ${{ inputs.dependent_branch }}
+    name: Checkout branch ${{ inputs.dependent_branch }}
     if: ${{ inputs.dependent_branch == 'update-dependencies' }}
     runs-on: ubuntu-latest
     steps:
@@ -26,10 +26,21 @@ jobs:
           # Required to make it possible to rebase with the main branch.
           fetch-depth: 0
 
-      - name: Rebase update-dependencies branch
+      - name: Config git & tetch repository
         run: |
           git config --local user.name 'github-actions[bot]'
           git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
+
+      - name: Rebase update-dependencies branch (aggressive strategy)
+        if: ${{ inputs.dependent_branch == 'update-dependencies' }}
+        run: |
           git rebase --strategy-option theirs --onto origin/${{ inputs.main_branch }} ${{ inputs.dependent_branch }}
+          git push origin ${{ inputs.dependent_branch }} --force
+
+      - name: Rebase update-dependencies branch (aggressive strategy)
+        if: ${{ inputs.dependent_branch != 'update-dependencies' }}
+        continue-on-error: true
+        run: |
+          git rebase origin/${{ inputs.main_branch }}
           git push origin ${{ inputs.dependent_branch }} --force
