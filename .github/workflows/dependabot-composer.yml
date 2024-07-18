@@ -108,21 +108,6 @@ jobs:
         run: |
           git checkout --force ${{ inputs.head_ref }}
 
-      - name: Get Dependabot update type
-        id: dependabot_metadata
-        if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' }}
-        uses: dependabot/fetch-metadata@v1
-        with:
-          skip-commit-verification: true
-          skip-verification: true
-
-      - name: Sometime Dependabot "forgets" to update composer.json
-        if: ${{ github.actor == 'dependabot[bot]' && steps.dependabot_metadata.outputs.update-type == 'version-update:semver-major' }}
-        run: |
-          VERSION_CONTRAINT=$(echo "${{ steps.dependabot_metadata.outputs.new-version }}" | grep -oP "\d+\.\d+")
-          composer require ${{ inputs.dependency_name }}:^${VERSION_CONTRAINT} --no-update
-          composer update --lock
-
       - name: Build the new codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
