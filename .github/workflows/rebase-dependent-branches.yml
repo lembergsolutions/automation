@@ -16,7 +16,6 @@ permissions:
 jobs:
   rebase:
     name: Checkout branch ${{ inputs.dependent_branch }}
-    if: ${{ inputs.dependent_branch == 'update-dependencies' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,7 +25,7 @@ jobs:
           # Required to make it possible to rebase with the main branch.
           fetch-depth: 0
 
-      - name: Config git & tetch repository
+      - name: Config git & fetch repository
         run: |
           git config --local user.name 'github-actions[bot]'
           git config --local user.email 'github-actions[bot]@users.noreply.github.com'
