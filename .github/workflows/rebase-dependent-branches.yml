@@ -37,7 +37,7 @@ jobs:
           git rebase --strategy-option theirs --onto origin/${{ inputs.main_branch }} ${{ inputs.dependent_branch }}
           git push origin ${{ inputs.dependent_branch }} --force
 
-      - name: Rebase update-dependencies branch (aggressive strategy)
+      - name: Rebase ${{ inputs.dependent_branch }}
         if: ${{ inputs.dependent_branch != 'update-dependencies' }}
         continue-on-error: true
         run: |
