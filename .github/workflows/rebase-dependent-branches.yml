@@ -31,14 +31,14 @@ jobs:
           git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
 
-      - name: Rebase update-dependencies branch (aggressive strategy)
-        if: ${{ inputs.dependent_branch == 'update-dependencies' }}
+      - name: Rebase ${{ inputs.dependent_branch }} branch (aggressive strategy)
+        if: ${{ github.event.pull_request.merged == true && inputs.dependent_branch == github.head_ref }}
         run: |
           git rebase --strategy-option theirs --onto origin/${{ inputs.main_branch }} ${{ inputs.dependent_branch }}
           git push origin ${{ inputs.dependent_branch }} --force
 
       - name: Rebase ${{ inputs.dependent_branch }}
-        if: ${{ inputs.dependent_branch != 'update-dependencies' }}
+        if: ${{ github.event.pull_request.merged == true && inputs.dependent_branch != github.head_ref }}
         continue-on-error: true
         run: |
           git rebase origin/${{ inputs.main_branch }}
