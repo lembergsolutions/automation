@@ -66,6 +66,11 @@ jobs:
         run: |
           composer validate --no-check-all --strict
 
+      - name: Ensure no patches are coming from the drupal.org MR diffs
+        run: |
+          MR_PATCHES_COUNT=$(cat composer.json | jq -r '.extra.patches[] | to_entries[] | select(.value | test("^https://git.drupalcode.org/project/.+/-/merge_requests/\\d+")) | [.value]' | jq -cs 'add | length')
+          exit "$MR_PATCHES_COUNT"
+
       - name: Build the codebase
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
