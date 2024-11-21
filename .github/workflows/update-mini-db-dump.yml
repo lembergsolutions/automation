@@ -89,9 +89,7 @@ jobs:
           # Ensure that translations directory exists.
           mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
 
-          ./vendor/bin/drush cache:rebuild
-          ./vendor/bin/drush updatedb --yes
-          ./vendor/bin/drush config:import --yes
+          ./vendor/bin/drush deploy
           ./vendor/bin/drush core:cron
 
           mkdir -p ./.ci
