@@ -9,6 +9,11 @@ on:
       dependent_branch:
         required: true
         type: string
+      head_branch:
+        required: false
+        type: string
+        default: update-dependencies
+
 
 permissions:
   contents: write
@@ -36,13 +41,13 @@ jobs:
           git fetch origin
 
       - name: Rebase ${{ inputs.dependent_branch }} branch (aggressive strategy)
-        if: ${{ github.event.pull_request.merged == true && inputs.dependent_branch == github.head_ref }}
+        if: ${{ inputs.dependent_branch == inputs.head_branch }}
         run: |
           git rebase --strategy-option theirs --onto origin/${{ inputs.main_branch }} ${{ inputs.dependent_branch }}
           git push origin ${{ inputs.dependent_branch }} --force
 
       - name: Rebase ${{ inputs.dependent_branch }}
-        if: ${{ github.event.pull_request.merged == true && inputs.dependent_branch != github.head_ref }}
+        if: ${{ inputs.dependent_branch != inputs.head_branch }}
         continue-on-error: true
         run: |
           git rebase origin/${{ inputs.main_branch }}
