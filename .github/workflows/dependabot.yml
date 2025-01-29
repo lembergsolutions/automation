@@ -93,7 +93,9 @@ jobs:
     # Automerge minor/patch updates only coming from dependabot branches into
     # any branch except main.
     if: ${{ startsWith(inputs.head_ref, 'dependabot') && inputs.base_ref != 'main' && (needs.metadata.outputs.update-type == 'version-update:semver-minor' || needs.metadata.outputs.update-type == 'version-update:semver-patch') }}
-    needs: composer-lock-diff
+    needs:
+      - composer-lock-diff
+      - phpstan
     uses: lembergsolutions/automation/.github/workflows/automerge.yml@3.x
     with:
       pull_request_url: ${{ inputs.pull_request_url }}
