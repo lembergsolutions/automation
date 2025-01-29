@@ -79,6 +79,15 @@ jobs:
       base_ref: ${{ inputs.base_ref }}
       pull_request_number: ${{ inputs.pull_request_number }}
 
+  phpstan:
+    name: phpstan
+    if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
+    needs: composer
+    uses: lembergsolutions/automation/.github/workflows/php-static-analysis.yml@3.x
+    with:
+      php_version: ${{ vars.PHP_VERSION }}
+      composer_version: ${{ vars.COMPOSER_VERSION }}
+
   automerge:
     name: dependabot
     # Automerge minor/patch updates only coming from dependabot branches into

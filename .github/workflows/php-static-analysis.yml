@@ -1,0 +1,77 @@
+name: PHPStan
+on:
+  workflow_call:
+    inputs:
+      php_version:
+        required: true
+        type: string
+      composer_version:
+        required: true
+        type: string
+      head_ref:
+        required: false
+        type: string
+        default: ${{ github.head_ref }}
+
+permissions:
+  contents: read
+
+jobs:
+  check_phpstan:
+    name: Check PHPStan availability
+    runs-on: ubuntu-latest
+    outputs:
+      is_available: ${{ steps.check_availability.outputs.is_available }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.head_ref }}
+
+      - name: Check PHPStan availability
+        id: check_availability
+        run: |
+          if [ -f "./phpstan.neon" ] || [ -f "./phpstan.neon.dist" ]; then
+            echo "is_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_available=false" >> $GITHUB_OUTPUT
+          fi
+  phpstan:
+    name: phpstan
+    if: ${{ needs.check_phpstan.outputs.is_available == 'true' }}
+    runs-on: ubuntu-latest
+    needs: check_phpstan
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.head_ref }}
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ inputs.php_version }}
+          tools: composer:${{ inputs.composer_version }}
+
+      - name: Get Composer config
+        id: composer_config
+        run: |
+          echo "cache_dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer_config.outputs.cache_dir }}
+          key: php-${{ inputs.php_version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: php-${{ inputs.php_version }}-
+
+      - name: Build the codebase
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: PHP static analysis
+        run: |
+          ./vendor/bin/phpstan analyse --memory-limit=384M
