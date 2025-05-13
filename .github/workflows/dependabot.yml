@@ -45,6 +45,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: ${{ inputs.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   metadata:
     name: dependabot
