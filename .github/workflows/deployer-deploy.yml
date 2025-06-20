@@ -30,7 +30,6 @@ jobs:
         with:
           coverage: none
           php-version: ${{ inputs.php_version }}
-          tools: deployer
 
       - name: Deploy
         uses: deployphp/action@v1
