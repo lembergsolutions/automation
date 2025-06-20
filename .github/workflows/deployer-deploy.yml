@@ -35,4 +35,4 @@ jobs:
         uses: deployphp/action@v1
         with:
           dep: deploy -f .deployer/deploy.yaml -o branch=${{ inputs.deploy_target }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
