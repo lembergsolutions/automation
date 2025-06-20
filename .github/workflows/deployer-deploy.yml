@@ -1,0 +1,39 @@
+name: Deploy via Deployer
+
+on:
+  workflow_call:
+    inputs:
+      deploy_target:
+        description: 'What version of the repository to check out. This can be the full 40-character SHA-1 hash, the literal string HEAD, a branch name, or a tag name'
+        required: true
+        default: 'main'
+        type: string
+      php_version:
+        required: true
+        type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        description: 'SSH private key'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ inputs.php_version }}
+          tools: deployer
+
+      - name: Deploy
+        uses: deployphp/action@v1
+        with:
+          dep: deploy -o branch=${{ inputs.deploy_target }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
