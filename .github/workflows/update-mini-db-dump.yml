@@ -89,7 +89,13 @@ jobs:
           # Ensure that translations directory exists.
           mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
 
-          ./vendor/bin/drush deploy
+          ./vendor/bin/drush updatedb --yes
+          # Run config import two times to avoid nasty "Deleted and replaced configuration entity"
+          # error during config import.
+          ./vendor/bin/drush config:import --yes || true
+          ./vendor/bin/drush config:import --yes
+          ./vendor/bin/drush cache:rebuild
+          ./vendor/bin/drush deploy:hook --yes
           ./vendor/bin/drush core:cron
 
           mkdir -p ./.ci
