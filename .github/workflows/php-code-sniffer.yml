@@ -17,9 +17,31 @@ permissions:
   contents: read
 
 jobs:
-  phpcs:
-    name: phpcs
+  check_phpcs:
+    name: check phpcs availability
     runs-on: ubuntu-latest
+    outputs:
+      is_available: ${{ steps.check_availability.outputs.is_available }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.head_ref }}
+
+      - name: Check PHPCS availability
+        id: check_availability
+        run: |
+          if [ -f "./phpcs.xml" ] || [ -f "./phpcs.xml.dist" ]; then
+            echo "is_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_available=false" >> $GITHUB_OUTPUT
+          fi
+
+  phpcs:
+    name: run phpcs
+    if: ${{ needs.check_phpcs.outputs.is_available == 'true' }}
+    runs-on: ubuntu-latest
+    needs: check_phpcs
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
