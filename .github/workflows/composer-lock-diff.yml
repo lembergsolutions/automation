@@ -57,7 +57,7 @@ jobs:
 
           DELIMETER="$(openssl rand -hex 8)"
 
-          OUTPUT=$(composer diff --base ${{ inputs.base_ref }} --with-links --with-platform --no-ansi)
+          OUTPUT=$(composer diff --base origin/${{ inputs.base_ref }} --with-links --with-platform --no-ansi)
 
           echo "composer_diff<<$DELIMETER" >> $GITHUB_OUTPUT
           echo "$OUTPUT" >> $GITHUB_OUTPUT
