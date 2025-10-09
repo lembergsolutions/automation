@@ -26,8 +26,30 @@ permissions:
   pull-requests: write
 
 jobs:
+  composer_diff_check:
+    name: composer lock diff check
+    runs-on: ubuntu-latest
+    outputs:
+      exit-code: ${{ steps.composer_lock_exists.outputs.exit-code }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.head_ref }}
+          # Required to make it possible to compare with PR base branch.
+          fetch-depth: 0
+
+      - name: Check if composer.lock exists both for the base and head
+        id: composer_lock_exists
+        run: |
+          git show ${{ inputs.base_ref }}:composer.lock > /dev/null 2>&1 && git show ${{ inputs.head_ref }}:composer.lock > /dev/null 2>&1
+          echo "exit-code=$?" >> $GITHUB_OUTPUT
+
   composer_diff:
     name: composer lock diff
+    if: jobs.composer_diff_check.outputs.exit-code == '0'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
