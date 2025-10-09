@@ -49,7 +49,8 @@ jobs:
 
   composer_diff:
     name: composer lock diff
-    if: jobs.composer_diff_check.outputs.exit-code == '0'
+    needs: composer_diff_check
+    if: needs.composer_diff_check.outputs.exit-code == '0'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
