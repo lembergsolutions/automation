@@ -37,13 +37,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.head_ref }}
           # Required to make it possible to compare with PR base branch.
           fetch-depth: 0
 
       - name: Check if composer.lock exists both for the base and head
         id: composer_lock_exists
         run: |
+          # Checkout both base and head branches, so check can be performed.
+          git checkout ${{ inputs.base_ref }}
+          git checkout ${{ inputs.head_ref }}
           git show ${{ inputs.base_ref }}:composer.lock > /dev/null 2>&1 && git show ${{ inputs.head_ref }}:composer.lock > /dev/null 2>&1
           echo "exit-code=$?" >> $GITHUB_OUTPUT
 
@@ -58,7 +60,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.head_ref }}
           # Required to make it possible to compare with PR base branch.
           fetch-depth: 0
 
@@ -77,10 +78,14 @@ jobs:
       - name: Run composer lock diff
         id: composer_diff
         run: |
+          # Checkout both base and head branches, so check can be performed.
+          git checkout ${{ inputs.base_ref }}
+          git checkout ${{ inputs.head_ref }}
 
+          # Generate a random delimiter to separate the output from the rest of the workflow.
           DELIMETER="$(openssl rand -hex 8)"
 
-          OUTPUT=$(composer diff --base origin/${{ inputs.base_ref }} --with-links --with-platform --no-ansi)
+          OUTPUT=$(composer diff --base ${{ inputs.base_ref }} --target ${{ inputs.head_ref }} --with-links --with-platform --no-ansi)
 
           echo "composer_diff<<$DELIMETER" >> $GITHUB_OUTPUT
           echo "$OUTPUT" >> $GITHUB_OUTPUT
