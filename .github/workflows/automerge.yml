@@ -16,6 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Enable automerge
-        run: gh pr merge --auto --squash "${{ inputs.pull_request_url }}"
+        run: gh pr merge --squash "${{ inputs.pull_request_url }}"
         env:
           GITHUB_TOKEN: "${{ github.token }}"
