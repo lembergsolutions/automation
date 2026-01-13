@@ -83,6 +83,17 @@ jobs:
       base_ref: ${{ inputs.base_ref }}
       pull_request_number: ${{ inputs.pull_request_number }}
 
+  add-release-notes:
+    name: release notes
+    if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
+    needs: composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add release notes from drupal.org
+        uses: mglaman/dependabot-drupal-mrn@v1.0.4
+        with:
+          github-token: ${{ github.token }}
+
   phpstan:
     name: phpstan
     if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
