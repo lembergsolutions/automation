@@ -85,7 +85,7 @@ jobs:
 
   add-release-notes:
     name: release notes
-    if: ${{ startsWith(inputs.head_ref, 'dependabot') }}
+    if: github.actor == 'dependabot[bot]'
     needs: composer
     runs-on: ubuntu-latest
     steps:
