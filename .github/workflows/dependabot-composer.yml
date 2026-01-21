@@ -78,10 +78,6 @@ jobs:
         run: |
           composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
-      - name: Build the new codebase
-        run: |
-          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
-
       - name: Start MySQL service & create DB
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
         run: |
@@ -109,6 +105,10 @@ jobs:
         run: |
           git fetch origin
           git checkout --force ${{ inputs.head_ref }}
+
+      - name: Build the new codebase
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
