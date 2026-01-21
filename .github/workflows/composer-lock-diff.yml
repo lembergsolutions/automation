@@ -46,6 +46,7 @@ jobs:
           # Checkout both base and head branches, so check can be performed.
           git checkout ${{ inputs.base_ref }}
           git checkout ${{ inputs.head_ref }}
+          git rebase ${{ inputs.base_ref }}
           git show ${{ inputs.base_ref }}:composer.lock > /dev/null 2>&1 && git show ${{ inputs.head_ref }}:composer.lock > /dev/null 2>&1
           echo "exit-code=$?" >> $GITHUB_OUTPUT
 
@@ -81,6 +82,7 @@ jobs:
           # Checkout both base and head branches, so check can be performed.
           git checkout ${{ inputs.base_ref }}
           git checkout ${{ inputs.head_ref }}
+          git rebase ${{ inputs.base_ref }}
 
           # Generate a random delimiter to separate the output from the rest of the workflow.
           DELIMETER="$(openssl rand -hex 8)"
