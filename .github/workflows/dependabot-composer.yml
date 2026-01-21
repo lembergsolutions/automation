@@ -44,12 +44,9 @@ jobs:
       COMPOSER_AUTH: '${{ secrets.COMPOSER_AUTH }}'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Checkout to the corresponding branch
-        run: |
-          git fetch origin
-          git checkout --force ${{ inputs.base_ref }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.base_ref }}
 
       - name: Merge Composer auth data before using shivammathur/setup-php
         run: |
@@ -86,6 +83,15 @@ jobs:
         run: |
           echo "core_version=$(./vendor/bin/drush status --format=json | jq '."drupal-version" | split(".")[0] | tonumber')" >> $GITHUB_OUTPUT
 
+      - name: Checkout to a new branch
+        run: |
+          git fetch origin
+          git checkout --force ${{ inputs.head_ref }}
+
+      - name: Build the new codebase
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
       - name: Start MySQL service & create DB
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
         run: |
@@ -103,14 +109,6 @@ jobs:
           mkdir -p ./${{ inputs.web_root }}/sites/default/files/translations
 
           ./vendor/bin/drush deploy
-
-      - name: Checkout to a new branch
-        run: |
-          git checkout --force ${{ inputs.head_ref }}
-
-      - name: Build the new codebase
-        run: |
-          composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: Update the DB & export the configuration
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
