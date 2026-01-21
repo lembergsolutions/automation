@@ -148,6 +148,5 @@ jobs:
           # Get username & email from the previous commit (dependabot's)
           git config --local user.email "$(git log --format='%ae' HEAD^!)"
           git config --local user.name "$(git log --format='%an' HEAD^!)"
-          # Commit without a message.
-          git commit --allow-empty-message -nm ""
+          git commit -nm "Export updated configuration"
           git push origin ${{ inputs.head_ref }} --force
