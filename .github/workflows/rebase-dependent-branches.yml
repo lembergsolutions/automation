@@ -28,7 +28,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.dependent_branch }}
           # Required to make it possible to rebase with the main branch.
@@ -41,13 +41,13 @@ jobs:
           git fetch origin
 
       - name: Rebase ${{ inputs.dependent_branch }} branch (aggressive strategy)
-        if: ${{ inputs.dependent_branch == inputs.head_branch }}
+        if: ${{ inputs.dependent_branch == inputs.head_branch && inputs.dependent_branch != inputs.main_branch }}
         run: |
           git rebase --strategy-option theirs --onto origin/${{ inputs.main_branch }} ${{ inputs.dependent_branch }}
           git push origin ${{ inputs.dependent_branch }} --force
 
       - name: Rebase ${{ inputs.dependent_branch }}
-        if: ${{ inputs.dependent_branch != inputs.head_branch }}
+        if: ${{ inputs.dependent_branch != inputs.head_branch && inputs.dependent_branch != inputs.main_branch }}
         continue-on-error: true
         run: |
           git rebase origin/${{ inputs.main_branch }}
