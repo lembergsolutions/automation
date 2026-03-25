@@ -114,6 +114,7 @@ jobs:
         if: ${{ steps.drupal_version.outputs.core_version != 7 }}
         run: |
           # Import any config adjustments before updating the database
+          ./vendor/bin/drush cache:rebuild
           ./vendor/bin/drush config:import --yes
           ./vendor/bin/drush updatedb --no-cache-clear --yes
           ./vendor/bin/drush cache:rebuild
